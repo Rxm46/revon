@@ -38,7 +38,7 @@ const FeaturesSection = () => {
   return (
     <section className="py-16 md:py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-16 animate-fade-in">
           <h2 className="text-3xl font-bold mb-4">Comprehensive Health Insights</h2>
           <p className="text-muted-foreground">
             Revon combines cutting-edge AI with medical knowledge to provide you with actionable health insights.
@@ -49,9 +49,9 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-white dark:bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+              className={`gradient-card p-6 animate-fade-in animate-fade-in-delay-${Math.min(Math.floor(index / 3) + 1, 3)}`}
             >
-              <div className="h-12 w-12 rounded-lg bg-revon-primary/10 flex items-center justify-center mb-4">
+              <div className="h-12 w-12 rounded-lg bg-revon-primary/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
