@@ -49,13 +49,15 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className={`gradient-card p-6 animate-fade-in animate-fade-in-delay-${Math.min(Math.floor(index / 3) + 1, 3)}`}
+              className={`group rounded-2xl overflow-hidden animate-fade-in animate-fade-in-delay-${Math.min(Math.floor(index / 3) + 1, 3)}`}
             >
-              <div className="h-12 w-12 rounded-lg bg-revon-primary/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
-                {feature.icon}
+              <div className="gradient-card p-6 h-full transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
+                <div className="h-12 w-12 rounded-lg bg-revon-primary/10 flex items-center justify-center mb-4 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2 transition-transform duration-300 group-hover:translate-x-1">{feature.title}</h3>
+                <p className="text-muted-foreground transition-all duration-300 group-hover:translate-x-1">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
             </div>
           ))}
         </div>
