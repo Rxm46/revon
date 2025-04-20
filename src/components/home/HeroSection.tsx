@@ -15,7 +15,7 @@ const HeroSection = () => {
             
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
               Understand Your Symptoms with
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-revon-primary to-revon-accent"> AI Precision</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-revon-primary to-revon-accent inline-block transition-transform duration-500 hover:scale-105 hover:translate-x-1"> AI Precision</span>
             </h1>
             
             <p className="text-lg text-muted-foreground max-w-md">
