@@ -1,8 +1,7 @@
-
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, ShieldCheck, HeartPulse } from "lucide-react";
+import { ArrowRight, Heart, ShieldCheck, HeartPulse, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AboutPage = () => {
@@ -63,6 +62,26 @@ const AboutPage = () => {
                   We take your privacy seriously. All data provided to Revon is encrypted and securely stored. 
                   We do not share your personal health information with third parties without your explicit consent.
                 </p>
+              </div>
+              
+              <div className="mt-12 bg-soft-purple/30 p-6 rounded-lg">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-revon-primary" />
+                  Contact Developer
+                </h2>
+                <div className="flex items-center gap-4">
+                  <div>
+                    <p className="text-muted-foreground mb-2">
+                      Have questions, suggestions, or feedback about Revon?
+                    </p>
+                    <a 
+                      href="mailto:ramvj2005@gmail.com" 
+                      className="text-revon-primary hover:underline font-medium"
+                    >
+                      ramvj2005@gmail.com
+                    </a>
+                  </div>
+                </div>
               </div>
               
               <div className="mt-12 flex justify-center">
