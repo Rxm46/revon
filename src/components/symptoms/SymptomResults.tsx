@@ -2,17 +2,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, ArrowLeft, MapPin, Utensils, FileText, HeartPulse } from "lucide-react";
+import { Shield, ArrowLeft, MapPin, Utensils, FileText, HeartPulse, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Disease, DoctorInfo } from "@/data/diseases";
+import DoctorsInfo from "./DoctorsInfo";
 
 type Results = {
-  diseases: Array<{
-    name: string;
-    probability: number;
-    description: string;
-  }>;
+  diseases: Disease[];
   precautions: string[];
   diet: string[];
+  doctors: DoctorInfo[];
 };
 
 interface SymptomResultsProps {
@@ -21,7 +20,8 @@ interface SymptomResultsProps {
 }
 
 const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
-  const { diseases, precautions, diet } = results;
+  const { diseases, precautions, diet, doctors } = results;
+  const primaryDisease = diseases[0];
   
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-md">
@@ -41,7 +41,7 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
       <Tabs defaultValue="diseases" className="w-full">
         <div className="px-6 pt-6">
           <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="diseases">Diseases</TabsTrigger>
+            <TabsTrigger value="diseases">Conditions</TabsTrigger>
             <TabsTrigger value="precautions">Precautions</TabsTrigger>
             <TabsTrigger value="diet">Diet</TabsTrigger>
           </TabsList>
@@ -55,9 +55,14 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
             
             <div className="space-y-4">
               {diseases.map((disease, index) => (
-                <div key={index} className="border rounded-lg p-4">
+                <div key={disease.id} className="border rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium">{disease.name}</h3>
+                    <div>
+                      <h3 className="font-medium">{disease.name}</h3>
+                      <div className="text-xs text-muted-foreground">
+                        Specialist: {disease.specialist}
+                      </div>
+                    </div>
                     <span className="text-sm font-semibold bg-revon-primary/10 text-revon-primary px-2 py-1 rounded">
                       {disease.probability}% match
                     </span>
@@ -71,7 +76,7 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-lg p-4 text-sm">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5">
-                  <Shield className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
                 </div>
                 <div>
                   <p className="font-medium text-yellow-800 dark:text-yellow-500">
@@ -84,6 +89,11 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
               </div>
             </div>
           </div>
+          
+          {/* Show doctors information if we have a primary disease */}
+          {primaryDisease && doctors.length > 0 && (
+            <DoctorsInfo doctors={doctors} specialty={primaryDisease.specialist} />
+          )}
         </TabsContent>
         
         <TabsContent value="precautions" className="p-6">

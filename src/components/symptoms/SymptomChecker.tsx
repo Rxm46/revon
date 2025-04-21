@@ -8,64 +8,43 @@ import SymptomResults from "./SymptomResults";
 import SymptomSearchInput from "./SymptomSearchInput";
 import SelectedSymptomsList from "./SelectedSymptomsList";
 import AdditionalInfoTextarea from "./AdditionalInfoTextarea";
-
-const SYMPTOMS = [
-  "Fever", "Cough", "Fatigue", "Shortness of breath", "Headache", 
-  "Sore throat", "Nausea", "Vomiting", "Diarrhea", "Muscle pain",
-  "Joint pain", "Chest pain", "Abdominal pain", "Dizziness", "Confusion"
-];
-
-type SymptomData = {
-  id: number;
-  name: string;
-};
-
-type Results = {
-  diseases: Array<{
-    name: string;
-    probability: number;
-    description: string;
-  }>;
-  precautions: string[];
-  diet: string[];
-};
+import { Symptom, searchSymptoms, SYMPTOMS } from "@/data/symptoms";
+import { predictDiseases, getDoctorsBySpecialty } from "@/data/diseases";
 
 const SymptomChecker = () => {
   const { toast } = useToast();
-  const [selectedSymptoms, setSelectedSymptoms] = useState<SymptomData[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<Results | null>(null);
+  const [results, setResults] = useState<any | null>(null);
+  const [showAllSymptoms, setShowAllSymptoms] = useState(false);
 
-  const filteredSymptoms = SYMPTOMS.filter(symptom =>
-    symptom.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get filtered symptoms based on search term
+  const filteredSymptoms = searchTerm 
+    ? searchSymptoms(searchTerm)
+    : SYMPTOMS;
 
-  const handleAddSymptom = (symptom: string) => {
+  const handleAddSymptom = (symptom: Symptom) => {
     const existingSymptom = selectedSymptoms.find(s => 
-      s.name.toLowerCase() === symptom.toLowerCase()
+      s.id === symptom.id
     );
 
     if (existingSymptom) {
       toast({
         title: "Symptom Already Added",
-        description: `${symptom} is already in your list.`,
+        description: `${symptom.name} is already in your list.`,
         duration: 2000,
       });
       return;
     }
 
-    const newSymptom = {
-      id: Date.now(),
-      name: symptom
-    };
-    setSelectedSymptoms([...selectedSymptoms, newSymptom]);
+    setSelectedSymptoms([...selectedSymptoms, symptom]);
     setSearchTerm("");
 
     toast({
       title: "Symptom Added",
-      description: `${symptom} has been added to your list.`,
+      description: `${symptom.name} has been added to your list.`,
       duration: 2000,
     });
   };
@@ -73,7 +52,7 @@ const SymptomChecker = () => {
   const handleVoiceInput = (text: string) => {
     // Check if the spoken text matches any known symptoms
     const matchedSymptom = SYMPTOMS.find(
-      symptom => symptom.toLowerCase() === text.toLowerCase()
+      symptom => symptom.name.toLowerCase() === text.toLowerCase()
     );
 
     if (matchedSymptom) {
@@ -89,7 +68,7 @@ const SymptomChecker = () => {
     }
   };
 
-  const handleRemoveSymptom = (id: number) => {
+  const handleRemoveSymptom = (id: string) => {
     setSelectedSymptoms(selectedSymptoms.filter(symptom => symptom.id !== id));
   };
 
@@ -105,50 +84,131 @@ const SymptomChecker = () => {
 
     setIsLoading(true);
 
-    // Simulate API call with mock data
-    setTimeout(() => {
-      const mockResults: Results = {
-        diseases: [
-          {
-            name: "Common Cold",
-            probability: 85,
-            description: "A mild viral infection of the nose and throat."
-          },
-          {
-            name: "Seasonal Allergies",
-            probability: 65,
-            description: "An immune system response to allergens like pollen."
-          },
-          {
-            name: "Influenza",
-            probability: 40,
-            description: "A contagious respiratory illness caused by influenza viruses."
-          }
-        ],
-        precautions: [
+    // Get the symptom IDs
+    const symptomIds = selectedSymptoms.map(s => s.id);
+    
+    // Predict diseases based on symptoms
+    const predictedDiseases = predictDiseases(symptomIds);
+    
+    // If we have at least one disease prediction
+    if (predictedDiseases.length > 0) {
+      // Get the specialist from the top disease prediction
+      const primarySpecialist = predictedDiseases[0].specialist;
+      
+      // Get doctors for that specialty
+      const recommendedDoctors = getDoctorsBySpecialty(primarySpecialist);
+      
+      // Generate precautions and diet based on top disease
+      let precautions: string[] = [];
+      let diet: string[] = [];
+      
+      // Common precautions based on disease
+      if (predictedDiseases[0].name.includes("Cold") || predictedDiseases[0].name.includes("Flu")) {
+        precautions = [
           "Get plenty of rest",
           "Stay hydrated",
           "Take over-the-counter pain relievers if needed",
-          "Use a humidifier to add moisture to the air"
-        ],
-        diet: [
+          "Use a humidifier to add moisture to the air",
+          "Wash hands frequently"
+        ];
+        diet = [
           "Chicken soup",
           "Herbal tea with honey",
           "Citrus fruits",
           "Leafy green vegetables",
           "Foods rich in zinc"
-        ]
-      };
-
-      setResults(mockResults);
-      setIsLoading(false);
-    }, 2000);
+        ];
+      } else if (predictedDiseases[0].name.includes("Allergies")) {
+        precautions = [
+          "Avoid known allergens",
+          "Keep windows closed during high pollen seasons",
+          "Use air purifiers",
+          "Shower after being outdoors",
+          "Consider over-the-counter antihistamines"
+        ];
+        diet = [
+          "Foods with quercetin (apples, berries)",
+          "Foods with omega-3 fatty acids (salmon, walnuts)",
+          "Probiotics (yogurt, fermented foods)",
+          "Turmeric (anti-inflammatory properties)",
+          "Avoid dairy if sensitive"
+        ];
+      } else if (predictedDiseases[0].name.includes("Migraine")) {
+        precautions = [
+          "Identify and avoid triggers",
+          "Maintain regular sleep schedule",
+          "Manage stress through relaxation techniques",
+          "Consider preventive medications if frequent",
+          "Stay in a quiet, dark room during attacks"
+        ];
+        diet = [
+          "Stay hydrated",
+          "Avoid processed foods",
+          "Limit caffeine",
+          "Avoid aged cheeses and processed meats",
+          "Maintain regular meal times"
+        ];
+      } else if (predictedDiseases[0].name.includes("GERD")) {
+        precautions = [
+          "Avoid lying down after eating",
+          "Elevate head while sleeping",
+          "Avoid tight-fitting clothes",
+          "Maintain healthy weight",
+          "Avoid trigger foods"
+        ];
+        diet = [
+          "Non-citrus fruits",
+          "Vegetables",
+          "Lean proteins",
+          "Whole grains",
+          "Avoid spicy and fatty foods"
+        ];
+      } else {
+        // Generic precautions and diet for other conditions
+        precautions = [
+          "Get regular check-ups",
+          "Maintain a healthy lifestyle",
+          "Get adequate sleep",
+          "Exercise regularly",
+          "Manage stress effectively"
+        ];
+        diet = [
+          "Balanced diet with fruits and vegetables",
+          "Adequate protein intake",
+          "Whole grains",
+          "Limit processed foods",
+          "Stay hydrated"
+        ];
+      }
+      
+      // Set the results
+      setTimeout(() => {
+        setResults({
+          diseases: predictedDiseases,
+          precautions,
+          diet,
+          doctors: recommendedDoctors
+        });
+        setIsLoading(false);
+      }, 1500);
+    } else {
+      // No diseases match the symptoms
+      setTimeout(() => {
+        toast({
+          title: "Analysis Inconclusive",
+          description: "We couldn't determine a likely condition from your symptoms. Please add more symptoms or consult a healthcare professional.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      }, 1500);
+    }
   };
 
   const handleReset = () => {
     setResults(null);
     setSelectedSymptoms([]);
     setAdditionalInfo("");
+    setShowAllSymptoms(false);
   };
 
   if (results) {
@@ -171,6 +231,8 @@ const SymptomChecker = () => {
           filteredSymptoms={filteredSymptoms}
           onAddSymptom={handleAddSymptom}
           onVoiceInput={handleVoiceInput}
+          showAllSymptoms={showAllSymptoms}
+          setShowAllSymptoms={setShowAllSymptoms}
         />
         <SelectedSymptomsList
           selectedSymptoms={selectedSymptoms}
