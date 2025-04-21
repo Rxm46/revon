@@ -1,49 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Heart, Shield, Search, Sparkles } from "lucide-react";
-
-// Function to animate each character in "AI Precision" with a sparkle
-const AnimatedAIText = () => {
-  const text = "AI Precision";
-  // We'll animate each letter after the last, slight stagger
-  return (
-    <span
-      className="bg-clip-text text-transparent bg-gradient-to-r from-revon-primary to-revon-accent inline-block font-playfair"
-      aria-label={text}
-    >
-      {[...text].map((char, idx) => (
-        <span
-          className={`relative inline-block animate-fade-in !opacity-0`}
-          style={{
-            animationDelay: `${0.15 + idx * 0.08}s`,
-            animationFillMode: "forwards",
-          }}
-          key={idx}
-        >
-          {char === " " ? "\u00A0" : char}
-          {/* Sparkle dust appears above letters, skip for spaces */}
-          {char !== " " && (
-            <span
-              className="absolute -top-3 left-1/2 -translate-x-1/2 pointer-events-none"
-              style={{ animation: `dust-pop 0.7s ${0.13 + idx * 0.08}s both` }}
-            >
-              <Sparkles className="w-4 h-4 text-revon-accent opacity-80" />
-            </span>
-          )}
-        </span>
-      ))}
-      <style>{`
-        @keyframes dust-pop {
-          0% { opacity: 0; transform: scale(0.4) translateY(6px);}
-          50% { opacity: .9; transform: scale(1.2) translateY(-6px);}
-          80% { opacity: .6; transform: scale(0.93) translateY(-2px);}
-          100% { opacity: 0; transform: scale(.7) translateY(0);}
-        }
-      `}</style>
-    </span>
-  );
-};
+import { ArrowRight, Heart, Shield, Search } from "lucide-react";
 
 const HeroSection = () => {
   return (
@@ -56,8 +14,8 @@ const HeroSection = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-              Understand Your Symptoms with{" "}
-              <AnimatedAIText />
+              Understand Your Symptoms with
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-revon-primary to-revon-accent inline-block transition-transform duration-500 hover:scale-105 hover:translate-x-1"> AI Precision</span>
             </h1>
             
             <p className="text-lg text-muted-foreground max-w-md">
@@ -97,7 +55,7 @@ const HeroSection = () => {
           <div className="relative">
             <div className="absolute -z-10 inset-0 bg-gradient-radial from-revon-primary/20 to-transparent opacity-70" />
             
-            <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8 max-w-md mx-auto transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-revon-primary/5">
+            <div className="bg-white dark:bg-card rounded-2xl shadow-xl p-8 max-w-md mx-auto">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Symptom Checker</h3>
