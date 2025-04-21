@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, ArrowRight, ArrowLeft } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import SymptomResults from "./SymptomResults";
+import VoiceInput from "./VoiceInput";
 
 const SYMPTOMS = [
   "Fever", "Cough", "Fatigue", "Shortness of breath", "Headache", 
@@ -43,6 +44,19 @@ const SymptomChecker = () => {
   );
   
   const handleAddSymptom = (symptom: string) => {
+    const existingSymptom = selectedSymptoms.find(s => 
+      s.name.toLowerCase() === symptom.toLowerCase()
+    );
+    
+    if (existingSymptom) {
+      toast({
+        title: "Symptom Already Added",
+        description: `${symptom} is already in your list.`,
+        duration: 2000,
+      });
+      return;
+    }
+    
     const newSymptom = {
       id: Date.now(),
       name: symptom
@@ -55,6 +69,25 @@ const SymptomChecker = () => {
       description: `${symptom} has been added to your list.`,
       duration: 2000,
     });
+  };
+  
+  const handleVoiceInput = (text: string) => {
+    // Check if the spoken text matches any known symptoms
+    const matchedSymptom = SYMPTOMS.find(
+      symptom => symptom.toLowerCase() === text.toLowerCase()
+    );
+    
+    if (matchedSymptom) {
+      handleAddSymptom(matchedSymptom);
+    } else {
+      // If no exact match, set as search term to show closest matches
+      setSearchTerm(text);
+      toast({
+        title: "Searching for symptom",
+        description: `Looking for symptoms similar to "${text}"`,
+        duration: 2000,
+      });
+    }
   };
   
   const handleRemoveSymptom = (id: number) => {
@@ -135,15 +168,23 @@ const SymptomChecker = () => {
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="symptom-search">Search and add symptoms</Label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              id="symptom-search"
-              placeholder="Type to search symptoms..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="relative flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="symptom-search"
+                placeholder="Type to search symptoms..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <VoiceInput onResult={handleVoiceInput} />
+          </div>
+          
+          <div className="text-xs text-muted-foreground mt-1">
+            Try using voice input 🎤 to add symptoms or search
           </div>
           
           {searchTerm && (
