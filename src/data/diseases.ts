@@ -1,4 +1,3 @@
-
 import { Symptom } from './symptoms';
 
 export type Disease = {
@@ -8,6 +7,7 @@ export type Disease = {
   specialist: string;
   commonSymptoms: string[]; // IDs of symptoms
   probabilityCalculation: (symptoms: string[]) => number;
+  probability?: number; // Add this property to fix the error
 };
 
 export type DoctorInfo = {
