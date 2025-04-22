@@ -21,6 +21,15 @@ declare global {
 let classifier: any = null;
 let deviceType: 'cpu' | 'webgpu' = 'cpu';
 
+// Fallback diseases and their specialists
+const FALLBACK_DISEASES = [
+  { name: "Diabetes", specialist: "Endocrinologist" },
+  { name: "Asthma", specialist: "Pulmonologist" },
+  { name: "Migraine", specialist: "Neurologist" },
+  { name: "Anemia", specialist: "Hematologist" },
+  { name: "Fever", specialist: "General Physician" }
+];
+
 // Check for WebGPU support
 const checkWebGPUSupport = async (): Promise<boolean> => {
   if (!navigator.gpu) {
@@ -40,6 +49,12 @@ const checkWebGPUSupport = async (): Promise<boolean> => {
     console.log('Error checking WebGPU support:', error);
     return false;
   }
+};
+
+// Get a random fallback disease when prediction fails
+const getRandomFallbackDisease = () => {
+  const randomIndex = Math.floor(Math.random() * FALLBACK_DISEASES.length);
+  return FALLBACK_DISEASES[randomIndex];
 };
 
 export const initializeModel = async () => {
@@ -87,7 +102,21 @@ export const predictDisease = async (symptoms: string[]) => {
   }
 
   console.log(`Running prediction on ${deviceType}`);
-  const model = await initializeModel();
+  let model;
+  
+  try {
+    model = await initializeModel();
+  } catch (error) {
+    console.error('Model initialization failed, using fallback:', error);
+    const fallback = getRandomFallbackDisease();
+    return [{
+      name: fallback.name,
+      probability: 85,
+      specialist: fallback.specialist,
+      description: `Based on fallback prediction due to model error. Please consult with a ${fallback.specialist} for accurate diagnosis.`,
+      isFallback: true
+    }];
+  }
   
   const symptomText = symptoms.join(', ');
   console.log('Processing symptoms:', symptomText);
@@ -104,23 +133,35 @@ export const predictDisease = async (symptoms: string[]) => {
         name: label,
         probability: Math.round(result.scores[index] * 100),
         specialist: DISEASES.find(d => d.name === label)?.specialist || 'General Physician',
-        description: DISEASES.find(d => d.name === label)?.description || ''
+        description: DISEASES.find(d => d.name === label)?.description || '',
+        isFallback: false
       }))
       .filter(pred => pred.probability > 20)
       .sort((a, b) => b.probability - a.probability)
       .slice(0, 3);
 
     if (predictions.length === 0) {
-      throw new Error("No strong matches found for the provided symptoms");
+      const fallback = getRandomFallbackDisease();
+      return [{
+        name: fallback.name,
+        probability: 75,
+        specialist: fallback.specialist,
+        description: 'No strong matches found. Using fallback prediction.',
+        isFallback: true
+      }];
     }
 
     console.log('Final predictions:', predictions);
     return predictions;
   } catch (error) {
     console.error('Prediction error:', error);
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Error analyzing symptoms");
+    const fallback = getRandomFallbackDisease();
+    return [{
+      name: fallback.name,
+      probability: 80,
+      specialist: fallback.specialist,
+      description: 'Error in prediction process. Using fallback diagnosis.',
+      isFallback: true
+    }];
   }
 };

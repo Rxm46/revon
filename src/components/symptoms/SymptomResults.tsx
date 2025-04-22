@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -58,7 +57,14 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
                 <div key={disease.id} className="border rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <div>
-                      <h3 className="font-medium">{disease.name}</h3>
+                      <h3 className="font-medium flex items-center gap-2">
+                        {disease.name}
+                        {disease.isFallback && (
+                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
+                            Fallback Prediction
+                          </span>
+                        )}
+                      </h3>
                       <div className="text-xs text-muted-foreground">
                         Specialist: {disease.specialist}
                       </div>
@@ -73,27 +79,28 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
               ))}
             </div>
             
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-lg p-4 text-sm">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <div>
-                  <p className="font-medium text-yellow-800 dark:text-yellow-500">
-                    Important Health Notice
-                  </p>
-                  <p className="mt-1 text-yellow-700 dark:text-yellow-400">
-                    This analysis is not a medical diagnosis. Always consult with a healthcare professional for proper medical advice.
-                  </p>
+            {diseases.some(d => d.isFallback) && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-lg p-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-yellow-800 dark:text-yellow-500">
+                      Fallback Prediction Notice
+                    </p>
+                    <p className="mt-1 text-yellow-700 dark:text-yellow-400">
+                      Due to technical limitations, we've provided a fallback prediction. Please consult with the recommended specialist for an accurate diagnosis.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+            
+            {primaryDisease && doctors.length > 0 && (
+              <DoctorsInfo doctors={doctors} specialty={primaryDisease.specialist} />
+            )}
           </div>
-          
-          {/* Show doctors information if we have a primary disease */}
-          {primaryDisease && doctors.length > 0 && (
-            <DoctorsInfo doctors={doctors} specialty={primaryDisease.specialist} />
-          )}
         </TabsContent>
         
         <TabsContent value="precautions" className="p-6">
