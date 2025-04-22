@@ -9,7 +9,7 @@ import SelectedSymptomsList from "./SelectedSymptomsList";
 import AdditionalInfoTextarea from "./AdditionalInfoTextarea";
 import { Symptom, searchSymptoms, SYMPTOMS } from "@/data/symptoms";
 import { getDoctorsBySpecialty } from "@/data/diseases";
-import { predictDisease } from "@/utils/diseasePredictor";
+import { predictDisease, initializeModel } from "@/utils/diseasePredictor";
 
 const SymptomChecker = () => {
   const { toast } = useToast();

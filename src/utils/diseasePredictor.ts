@@ -2,6 +2,22 @@
 import { pipeline, env } from '@huggingface/transformers';
 import { DISEASES } from '@/data/diseases';
 
+// Add TypeScript interface for WebGPU
+interface GPUDevice {}
+
+interface GPU {
+  requestAdapter(): Promise<{
+    requestDevice(): Promise<GPUDevice>;
+  } | null>;
+}
+
+// Extend Navigator interface to include gpu property
+declare global {
+  interface Navigator {
+    gpu?: GPU;
+  }
+}
+
 let classifier: any = null;
 let deviceType: 'cpu' | 'webgpu' = 'cpu';
 
