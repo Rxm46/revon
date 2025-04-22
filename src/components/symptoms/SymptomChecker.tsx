@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -103,10 +104,12 @@ const SymptomChecker = () => {
     try {
       const symptomNames = selectedSymptoms.map(s => s.name);
       const predictions = await predictDisease(symptomNames);
-      
+
       if (predictions && predictions.length > 0) {
-        const recommendedDoctors = getDoctorsBySpecialty(predictions[0].specialist);
-        
+        // Fix: always use specialist from fallback or predicted
+        const primarySpecialist = predictions[0].specialist;
+        const recommendedDoctors = getDoctorsBySpecialty(primarySpecialist);
+
         setResults({
           diseases: predictions,
           precautions: [
