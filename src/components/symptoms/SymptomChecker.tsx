@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -19,6 +19,25 @@ const SymptomChecker = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<any | null>(null);
   const [showAllSymptoms, setShowAllSymptoms] = useState(false);
+  const [isModelLoading, setIsModelLoading] = useState(true);
+
+  useEffect(() => {
+    const initModel = async () => {
+      try {
+        await initializeModel();
+      } catch (error) {
+        toast({
+          title: "Model Initialization Error",
+          description: "Error loading the analysis model. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsModelLoading(false);
+      }
+    };
+    
+    initModel();
+  }, []);
 
   const filteredSymptoms = searchTerm 
     ? searchSymptoms(searchTerm)
@@ -135,38 +154,48 @@ const SymptomChecker = () => {
       <CardHeader>
         <CardTitle className="text-2xl">Symptom Checker</CardTitle>
         <CardDescription>
-          Add your symptoms and provide additional information for a more accurate analysis.
+          {isModelLoading 
+            ? "Initializing analysis model..."
+            : "Add your symptoms and provide additional information for a more accurate analysis."}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <SymptomSearchInput
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filteredSymptoms={filteredSymptoms}
-          onAddSymptom={handleAddSymptom}
-          onVoiceInput={handleVoiceInput}
-          showAllSymptoms={showAllSymptoms}
-          setShowAllSymptoms={setShowAllSymptoms}
-        />
-        <SelectedSymptomsList
-          selectedSymptoms={selectedSymptoms}
-          onRemoveSymptom={handleRemoveSymptom}
-        />
-        <AdditionalInfoTextarea
-          value={additionalInfo}
-          onChange={setAdditionalInfo}
-        />
+        {isModelLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-revon-primary"></div>
+          </div>
+        ) : (
+          <>
+            <SymptomSearchInput
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filteredSymptoms={filteredSymptoms}
+              onAddSymptom={handleAddSymptom}
+              onVoiceInput={handleVoiceInput}
+              showAllSymptoms={showAllSymptoms}
+              setShowAllSymptoms={setShowAllSymptoms}
+            />
+            <SelectedSymptomsList
+              selectedSymptoms={selectedSymptoms}
+              onRemoveSymptom={handleRemoveSymptom}
+            />
+            <AdditionalInfoTextarea
+              value={additionalInfo}
+              onChange={setAdditionalInfo}
+            />
+          </>
+        )}
       </CardContent>
 
       <CardFooter>
         <Button 
           className="w-full gradient-btn"
           onClick={handleAnalyze}
-          disabled={isLoading}
+          disabled={isLoading || isModelLoading}
         >
-          {isLoading ? "Analyzing..." : "Analyze Symptoms"}
-          {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+          {isModelLoading ? "Initializing..." : isLoading ? "Analyzing..." : "Analyze Symptoms"}
+          {!isLoading && !isModelLoading && <ArrowRight className="ml-2 h-4 w-4" />}
         </Button>
       </CardFooter>
     </Card>
