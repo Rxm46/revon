@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 import { DISEASES } from '@/data/diseases';
 
@@ -19,7 +18,7 @@ declare global {
 }
 
 let classifier: any = null;
-let deviceType: 'cpu' | 'webgpu' = 'cpu';
+let deviceType: 'wasm' | 'webgpu' = 'wasm';
 
 // Fallback diseases and their specialists
 const FALLBACK_DISEASES = [
@@ -62,7 +61,7 @@ export const initializeModel = async () => {
     try {
       // Check for WebGPU support
       const hasWebGPU = await checkWebGPUSupport();
-      deviceType = hasWebGPU ? 'webgpu' : 'cpu';
+      deviceType = hasWebGPU ? 'webgpu' : 'wasm';
       
       console.log(`Initializing model on ${deviceType}`);
       
@@ -79,18 +78,7 @@ export const initializeModel = async () => {
       console.log('Model initialized successfully');
     } catch (error) {
       console.error('Error initializing model:', error);
-      // Fallback to CPU if WebGPU initialization fails
-      if (deviceType === 'webgpu') {
-        console.log('Falling back to CPU');
-        deviceType = 'cpu';
-        classifier = await pipeline(
-          'zero-shot-classification',
-          'facebook/bart-large-mnli',
-          { device: 'cpu' }
-        );
-      } else {
-        throw error;
-      }
+      throw error;
     }
   }
   return classifier;
