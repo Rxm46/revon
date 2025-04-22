@@ -1,5 +1,6 @@
 
 import { pipeline } from '@huggingface/transformers';
+import { DISEASES } from '@/data/diseases';
 
 let classifier: any = null;
 
@@ -15,31 +16,43 @@ export const initializeModel = async () => {
 };
 
 export const predictDisease = async (symptoms: string[]) => {
+  // If no symptoms provided, return early
+  if (!symptoms.length) {
+    throw new Error("Please select at least one symptom for analysis");
+  }
+
   const model = await initializeModel();
   
   // Convert symptoms array to a text description
   const symptomText = symptoms.join(', ');
   
-  // Define possible diseases as candidate labels
-  const candidateLabels = [
-    'Common Cold',
-    'Influenza',
-    'Seasonal Allergies',
-    'Migraine',
-    'Gastroesophageal Reflux Disease',
-    'Asthma',
-    'Arthritis',
-    'Hypertension'
-  ];
+  // Get disease names as candidate labels
+  const candidateLabels = DISEASES.map(disease => disease.name);
 
   try {
     const result = await model(symptomText, candidateLabels);
-    return result.labels.map((label: string, index: number) => ({
-      name: label,
-      probability: Math.round(result.scores[index] * 100)
-    }));
+    
+    // Filter predictions with score > 20%
+    const predictions = result.labels
+      .map((label: string, index: number) => ({
+        name: label,
+        probability: Math.round(result.scores[index] * 100),
+        specialist: DISEASES.find(d => d.name === label)?.specialist || 'General Physician',
+        description: DISEASES.find(d => d.name === label)?.description || ''
+      }))
+      .filter(pred => pred.probability > 20)
+      .sort((a, b) => b.probability - a.probability)
+      .slice(0, 3); // Top 3 predictions
+
+    if (predictions.length === 0) {
+      throw new Error("No strong matches found for the provided symptoms");
+    }
+
+    return predictions;
   } catch (error) {
-    console.error('Error predicting disease:', error);
-    return [];
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Error analyzing symptoms");
   }
 };

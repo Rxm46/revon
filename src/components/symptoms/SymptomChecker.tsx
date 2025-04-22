@@ -83,48 +83,35 @@ const SymptomChecker = () => {
 
     try {
       const symptomNames = selectedSymptoms.map(s => s.name);
-      
       const predictions = await predictDisease(symptomNames);
       
-      if (predictions.length > 0) {
-        const topDisease = predictions[0];
+      if (predictions && predictions.length > 0) {
+        const recommendedDoctors = getDoctorsBySpecialty(predictions[0].specialist);
         
-        const recommendedDoctors = getDoctorsBySpecialty(topDisease.specialist || "General Physician");
-        
-        const precautions = [
-          "Consult with a healthcare professional",
-          "Get adequate rest",
-          "Stay hydrated",
-          "Monitor your symptoms",
-          "Follow prescribed medications if any"
-        ];
-        
-        const diet = [
-          "Maintain a balanced diet",
-          "Include fresh fruits and vegetables",
-          "Stay hydrated with water",
-          "Avoid processed foods",
-          "Consider supplements as recommended by your doctor"
-        ];
-
         setResults({
           diseases: predictions,
-          precautions,
-          diet,
+          precautions: [
+            "Consult with a healthcare professional",
+            "Get adequate rest",
+            "Stay hydrated",
+            "Monitor your symptoms",
+            "Follow prescribed medications if any"
+          ],
+          diet: [
+            "Maintain a balanced diet",
+            "Include fresh fruits and vegetables",
+            "Stay hydrated with water",
+            "Avoid processed foods",
+            "Consider supplements as recommended by your doctor"
+          ],
           doctors: recommendedDoctors
-        });
-      } else {
-        toast({
-          title: "Analysis Inconclusive",
-          description: "We couldn't determine a likely condition from your symptoms. Please consult a healthcare professional.",
-          variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Error during analysis:', error);
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while analyzing your symptoms";
       toast({
-        title: "Error During Analysis",
-        description: "An error occurred while analyzing your symptoms. Please try again.",
+        title: "Analysis Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
