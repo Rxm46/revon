@@ -7,8 +7,7 @@ export type Disease = {
   specialist: string;
   commonSymptoms: string[]; // IDs of symptoms
   probabilityCalculation: (symptoms: string[]) => number;
-  probability?: number;
-  isFallback?: boolean; // For fallback reporting
+  probability?: number; // Add this property to fix the error
 };
 
 export type DoctorInfo = {
@@ -255,119 +254,12 @@ export const DOCTORS: DoctorInfo[] = [
     address: "3, EVR Periyar Salai, Park Town, Chennai, 600003",
     contact: "+91 44 2530 5000",
     mapsLink: "https://maps.app.goo.gl/KqRPBHihCQ4LZr4D9"
-  },
-  
-  // Adding new specialist entries as per user request
-  {
-    id: "doc-11",
-    name: "Dr. R. Nithyanand Brain & Spine Clinic",
-    specialty: "Neurologist",
-    hospital: "Brain & Spine Clinic",
-    location: "Kallukulam, Nanjikottai Road, Thanjavur, Tamil Nadu",
-    address: "Kallukulam, Nanjikottai Road, Thanjavur, Tamil Nadu 613001",
-    contact: "",
-    mapsLink: ""
-  },
-  {
-    id: "doc-12",
-    name: "Dr. G Anuja MS (ENT)",
-    specialty: "Ear, Nose, and Throat Surgeon",
-    hospital: "",
-    location: "Thanjavur, Tamil Nadu",
-    address: "2784, Basement, South Rampart, Opp. to Thilagar Street, Thidal, Thanjavur, Tamil Nadu 613001",
-    contact: "097504 23623",
-    mapsLink: ""
-  },
-  {
-    id: "doc-13",
-    name: "Dr. Soodimuthu - ENT Specialist",
-    specialty: "ENT, Vertigo, Head & Neck Surgery",
-    hospital: "Mohan ENT Clinic",
-    location: "Thanjavur, Tamil Nadu",
-    address: "57, Ayush Nagar, Karuppan Nagar, Thanjavur, Tamil Nadu 613005",
-    contact: "094441 53675",
-    mapsLink: ""
-  },
-  {
-    id: "doc-14",
-    name: "Yogi EEG Clinic",
-    specialty: "EEG Services",
-    hospital: "",
-    location: "Thanjavur, Tamil Nadu",
-    address: "2783 South Rampart, Opp. to Thilagar Thidal, Thanjavur, Tamil Nadu 613001",
-    contact: "097866 06634",
-    mapsLink: ""
-  },
-  {
-    id: "doc-15",
-    name: "Apollo Hospitals",
-    specialty: "Multispecialty",
-    hospital: "Apollo Hospitals",
-    location: "Chennai, Tamil Nadu",
-    address: "Greams Road, Chennai, Tamil Nadu",
-    contact: "044 2829 3333",
-    mapsLink: ""
-  },
-  {
-    id: "doc-16",
-    name: "Sankara Nethralaya",
-    specialty: "Eye Care",
-    hospital: "Sankara Nethralaya",
-    location: "Chennai, Tamil Nadu",
-    address: "College Road, Chennai, Tamil Nadu",
-    contact: "044 4227 1500",
-    mapsLink: ""
-  },
-  {
-    id: "doc-17",
-    name: "MIOT International",
-    specialty: "Orthopedics and Trauma Care",
-    hospital: "MIOT International",
-    location: "Manapakkam, Chennai, Tamil Nadu",
-    address: "Manapakkam, Chennai, Tamil Nadu",
-    contact: "044 4200 2288",
-    mapsLink: ""
-  },
-  {
-    id: "doc-18",
-    name: "Dr. Mohan's Diabetes Specialities Centre",
-    specialty: "Diabetes Care",
-    hospital: "Dr. Mohan's Diabetes Specialities Centre",
-    location: "Gopalapuram, Chennai, Tamil Nadu",
-    address: "Gopalapuram, Chennai, Tamil Nadu",
-    contact: "044 4396 8888",
-    mapsLink: ""
-  },
-  {
-    id: "doc-19",
-    name: "Ganga Hospital",
-    specialty: "Orthopedics and Trauma",
-    hospital: "Ganga Hospital",
-    location: "Coimbatore, Tamil Nadu",
-    address: "Mettupalayam Road, Coimbatore, Tamil Nadu",
-    contact: "0422 248 5000",
-    mapsLink: ""
-  },
-  {
-    id: "doc-20",
-    name: "Aravind Eye Hospital",
-    specialty: "Eye Care",
-    hospital: "Aravind Eye Hospital",
-    location: "Coimbatore, Tamil Nadu",
-    address: "Avinashi Road, Coimbatore, Tamil Nadu",
-    contact: "0422 436 3434",
-    mapsLink: ""
-  },
+  }
 ];
 
 // Get doctors by specialty
 export const getDoctorsBySpecialty = (specialty: string): DoctorInfo[] => {
-  return DOCTORS.filter(
-    (doctor) => doctor.specialty === specialty
-      // "specialist" or "specialty" naming may vary; allow substring match for some added entries:
-      || doctor.specialty?.toLowerCase().includes(specialty.toLowerCase())
-      || specialty.toLowerCase().includes(doctor.specialty?.toLowerCase() ?? "")
-  );
+  return DOCTORS.filter(doctor => doctor.specialty === specialty);
 };
 
 // Predict diseases based on symptoms

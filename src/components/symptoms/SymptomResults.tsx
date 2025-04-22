@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, ArrowLeft, MapPin, Utensils, FileText, HeartPulse } from "lucide-react";
+import { Shield, ArrowLeft, MapPin, Utensils, FileText, HeartPulse, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Disease, DoctorInfo } from "@/data/diseases";
 import DoctorsInfo from "./DoctorsInfo";
@@ -21,7 +21,7 @@ interface SymptomResultsProps {
 const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
   const { diseases, precautions, diet, doctors } = results;
   const primaryDisease = diseases[0];
-
+  
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-md">
       <CardHeader className="border-b">
@@ -36,7 +36,7 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
           </Button>
         </div>
       </CardHeader>
-
+      
       <Tabs defaultValue="diseases" className="w-full">
         <div className="px-6 pt-6">
           <TabsList className="grid grid-cols-3 w-full">
@@ -45,16 +45,16 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
             <TabsTrigger value="diet">Diet</TabsTrigger>
           </TabsList>
         </div>
-
+        
         <TabsContent value="diseases" className="p-6">
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground">
               Based on the symptoms you provided, these are the potential conditions:
             </p>
-
+            
             <div className="space-y-4">
               {diseases.map((disease, index) => (
-                <div key={disease.id || disease.name} className="border rounded-lg p-4">
+                <div key={disease.id} className="border rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <div>
                       <h3 className="font-medium flex items-center gap-2">
@@ -73,13 +73,13 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
                       {disease.probability}% match
                     </span>
                   </div>
-                  <Progress value={disease.probability ?? 0} className="h-2 mb-3" />
+                  <Progress value={disease.probability} className="h-2 mb-3" />
                   <p className="text-sm text-muted-foreground">{disease.description}</p>
                 </div>
               ))}
             </div>
-
-            {diseases.some((d) => d.isFallback) && (
+            
+            {diseases.some(d => d.isFallback) && (
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-lg p-4 text-sm">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5">
@@ -96,19 +96,19 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
                 </div>
               </div>
             )}
-
-            {primaryDisease && (
+            
+            {primaryDisease && doctors.length > 0 && (
               <DoctorsInfo doctors={doctors} specialty={primaryDisease.specialist} />
             )}
           </div>
         </TabsContent>
-
+        
         <TabsContent value="precautions" className="p-6">
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground">
               Consider these precautionary measures based on your symptoms:
             </p>
-
+            
             <div className="space-y-3">
               {precautions.map((precaution, index) => (
                 <div 
@@ -122,7 +122,7 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
                 </div>
               ))}
             </div>
-
+            
             <div className="flex justify-center mt-4">
               <Button asChild variant="outline">
                 <a href="#" className="flex items-center gap-2">
@@ -133,13 +133,13 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
             </div>
           </div>
         </TabsContent>
-
+        
         <TabsContent value="diet" className="p-6">
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground">
               Dietary recommendations that may help with your condition:
             </p>
-
+            
             <div className="space-y-3">
               {diet.map((item, index) => (
                 <div 
@@ -156,13 +156,13 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
           </div>
         </TabsContent>
       </Tabs>
-
+      
       <CardFooter className="border-t px-6 py-4 flex justify-between">
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           New Analysis
         </Button>
-
+        
         <Button className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Save Report
