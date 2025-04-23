@@ -1,3 +1,4 @@
+
 import { pipeline, env } from '@huggingface/transformers';
 import { DISEASES } from '@/data/diseases';
 
@@ -17,8 +18,25 @@ declare global {
   }
 }
 
+// Available models for disease prediction
+export const AI_MODELS = {
+  GENERAL: {
+    name: "General Purpose Model",
+    id: "facebook/bart-large-mnli",
+    description: "A general-purpose language model for text classification"
+  },
+  MEDICAL: {
+    name: "Medical Specialized Model",
+    id: "medicalai/ClinicalBERT", // example - would need to be replaced with an actual medical model
+    description: "A model fine-tuned on medical text for better diagnosis accuracy"
+  }
+};
+
+type ModelType = keyof typeof AI_MODELS;
+
 let classifier: any = null;
 let deviceType: 'wasm' | 'webgpu' = 'wasm';
+let currentModelType: ModelType = 'GENERAL';
 
 // Fallback diseases and their specialists
 const FALLBACK_DISEASES = [
@@ -56,44 +74,50 @@ const getRandomFallbackDisease = () => {
   return FALLBACK_DISEASES[randomIndex];
 };
 
-export const initializeModel = async () => {
-  if (!classifier) {
-    try {
-      // Check for WebGPU support
-      const hasWebGPU = await checkWebGPUSupport();
-      deviceType = hasWebGPU ? 'webgpu' : 'wasm';
-      
-      console.log(`Initializing model on ${deviceType}`);
-      
-      // Configure transformers.js
-      env.useBrowserCache = true;
-      env.allowLocalModels = false;
-
-      classifier = await pipeline(
-        'zero-shot-classification',
-        'facebook/bart-large-mnli',
-        { device: deviceType }
-      );
-      
-      console.log('Model initialized successfully');
-    } catch (error) {
-      console.error('Error initializing model:', error);
-      throw error;
-    }
+export const initializeModel = async (modelType: ModelType = 'GENERAL') => {
+  // If we're trying to use the same model that's already loaded, return it
+  if (classifier && currentModelType === modelType) {
+    return classifier;
   }
+  
+  try {
+    // Check for WebGPU support
+    const hasWebGPU = await checkWebGPUSupport();
+    deviceType = hasWebGPU ? 'webgpu' : 'wasm';
+    
+    console.log(`Initializing ${AI_MODELS[modelType].name} on ${deviceType}`);
+    
+    // Configure transformers.js
+    env.useBrowserCache = true;
+    env.allowLocalModels = false;
+
+    // Load the selected model
+    classifier = await pipeline(
+      'zero-shot-classification',
+      AI_MODELS[modelType].id,
+      { device: deviceType }
+    );
+    
+    currentModelType = modelType;
+    console.log(`Model ${AI_MODELS[modelType].name} initialized successfully`);
+  } catch (error) {
+    console.error('Error initializing model:', error);
+    throw error;
+  }
+  
   return classifier;
 };
 
-export const predictDisease = async (symptoms: string[]) => {
+export const predictDisease = async (symptoms: string[], modelType: ModelType = 'GENERAL') => {
   if (!symptoms.length) {
     throw new Error("Please select at least one symptom for analysis");
   }
 
-  console.log(`Running prediction on ${deviceType}`);
+  console.log(`Running prediction with ${AI_MODELS[modelType].name} on ${deviceType}`);
   let model;
   
   try {
-    model = await initializeModel();
+    model = await initializeModel(modelType);
   } catch (error) {
     console.error('Model initialization failed, using fallback:', error);
     const fallback = getRandomFallbackDisease();
@@ -152,4 +176,14 @@ export const predictDisease = async (symptoms: string[]) => {
       isFallback: true
     }];
   }
+};
+
+// Function to get currently active model info
+export const getCurrentModelInfo = () => {
+  return {
+    name: AI_MODELS[currentModelType].name,
+    id: AI_MODELS[currentModelType].id,
+    description: AI_MODELS[currentModelType].description,
+    deviceType: deviceType
+  };
 };

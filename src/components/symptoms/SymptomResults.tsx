@@ -1,7 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, ArrowLeft, MapPin, Utensils, FileText, HeartPulse, AlertTriangle } from "lucide-react";
+import { ShieldCheck, ArrowLeft, MapPin, Utensils, FileText, HeartPulse, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Disease, DoctorInfo } from "@/data/diseases";
 import DoctorsInfo from "./DoctorsInfo";
@@ -116,7 +117,7 @@ const SymptomResults = ({ results, onBack }: SymptomResultsProps) => {
                   className="flex items-center gap-3 p-3 border rounded-lg"
                 >
                   <div className="h-8 w-8 rounded-full bg-revon-primary/10 flex items-center justify-center shrink-0">
-                    <Shield className="h-4 w-4 text-revon-primary" />
+                    <ShieldCheck className="h-4 w-4 text-revon-primary" />
                   </div>
                   <span>{precaution}</span>
                 </div>
