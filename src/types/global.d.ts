@@ -1,4 +1,3 @@
-
 // Extending Window interface to include SpeechRecognition
 interface Window {
   SpeechRecognition: typeof SpeechRecognition;
@@ -54,4 +53,13 @@ interface SpeechRecognitionAlternative {
 interface SpeechRecognitionErrorEvent extends Event {
   readonly error: string;
   readonly message: string;
+}
+
+export interface Disease {
+  id: string;
+  name: string;
+  specialist: string;
+  probability: number;
+  description: string;
+  isFallback?: boolean;
 }
