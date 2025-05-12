@@ -1,73 +1,47 @@
-# Welcome to your Lovable project
+# Revon: AI-Based Symptom-to-Disease Prediction Web Application
 
-## Project info
+Revon is a cutting-edge AI-based web application designed to help users identify potential diseases based on their symptoms. By leveraging machine learning models and data analysis, Revon offers accurate disease predictions and valuable insights into medical conditions. The app also provides a list of specialists based on the user's symptoms.
 
-**URL**: https://lovable.dev/projects/06de8de2-bf5f-4ebb-bc7c-c1f55b9856fa
+## Features
 
-## How can I edit this code?
+- **Symptom Checker**: Users can input their symptoms, and the app will predict potential diseases.
+- **Disease Prediction**: Based on symptoms, the app predicts possible diseases using AI models.
+- **Specialist Finder**: After prediction, relevant specialists are displayed along with their contact information and location.
+- **User-Friendly Interface**: Easy-to-use web interface with intuitive design.
+- **Data Security**: All user input and data are processed securely.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React.js
+- **Backend**: Python (Flask/FastAPI)
+- **AI/ML**: Scikit-learn, TensorFlow (for disease prediction model)
+- **Database**: MongoDB (for storing user data and disease-related information)
+- **API**: RESTful API for interaction between frontend and backend
+- **Deployment**: Docker, Heroku/AWS (for cloud deployment)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/06de8de2-bf5f-4ebb-bc7c-c1f55b9856fa) and start prompting.
+## Setup & Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+Before you begin, ensure you have the following installed:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- [Node.js](https://nodejs.org/)
+- [Python 3.x](https://www.python.org/)
+- [MongoDB](https://www.mongodb.com/try/download/community) (if running locally)
+- [Docker](https://www.docker.com/get-started) (optional for containerization)
+## Usage
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Open the app in your browser at [http://localhost:3000](http://localhost:3000).
+2. Enter symptoms into the provided text box.
+3. The app will predict possible diseases based on your input.
+4. After prediction, the app will display a list of relevant specialists along with their contact details.
+5. Click on a specialist to view more details.
 
-Follow these steps:
+## Contributing
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+We welcome contributions! If you'd like to contribute, feel free to fork the repository, make changes, and submit a pull request. Here are a few ways you can help:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Report bugs or issues
+- Suggest new features or improvements
+- Submit code to fix issues or enhance functionality
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/06de8de2-bf5f-4ebb-bc7c-c1f55b9856fa) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
